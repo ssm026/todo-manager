@@ -4,7 +4,6 @@ import com.kakaopay.todomanager.entity.Task;
 import com.kakaopay.todomanager.entity.Reference;
 import com.kakaopay.todomanager.repository.ReferenceRepository;
 import com.kakaopay.todomanager.repository.TaskRepository;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class TaskRepositoryTest {
+public class TodomanagerRepositoryTest extends CommonTest {
     @Autowired
     private TestEntityManager testEntityManager;
 
@@ -29,31 +28,11 @@ public class TaskRepositoryTest {
     @Autowired
     private ReferenceRepository referenceRepository;
 
-    @Before
-    public void setData() {
-        Task task1 = Task.builder().name("task1").build();
-        Task task2 = Task.builder().name("task2").build();
-        Task task3 = Task.builder().name("task3").build();
-        Task task4 = Task.builder().name("task4").build();
-        Reference reference1 = Reference.builder().task(task2).referenceTaskId(1).build();
-        Reference reference2 = Reference.builder().task(task3).referenceTaskId(1).build();
-        Reference reference3 = Reference.builder().task(task4).referenceTaskId(1).build();
-        Reference reference4 = Reference.builder().task(task4).referenceTaskId(3).build();
-
-        task2.getReferenceList().add(reference1);
-        task3.getReferenceList().add(reference2);
-        task4.getReferenceList().add(reference3);
-        task4.getReferenceList().add(reference4);
-
-        testEntityManager.persist(task1);
-        taskRepository.save(task2);
-        taskRepository.save(task3);
-        taskRepository.save(task4);
-    }
-
     @Test
     public void insertTaskTest() {
         Task task = Task.builder().name("task1").finishFlag(true).createTime(new Date()).build();
+        Reference reference = Reference.builder().task(task).referenceTaskId(3).build();
+        task.getReferenceList().add(reference);
         testEntityManager.persist(task);
 
         List<Task> taskList = taskRepository.findAll();
@@ -86,7 +65,7 @@ public class TaskRepositoryTest {
     }
 
     @Test
-    public void findTaskToReferenceJoinDataTest() {
+    public void getJoinDataTest() {
         List<Task> joinTaskList = taskRepository.findAll();
 
         assertThat(joinTaskList)
@@ -98,5 +77,24 @@ public class TaskRepositoryTest {
         assertThat(joinTaskList.get(3).getReferenceList())
                 .isNotEmpty()
                 .hasSize(2);
+    }
+
+    @Test
+    public void getAllDataTest() {
+        List<Task> taskList = taskRepository.findAll();
+
+        assertThat(taskList)
+                .isNotEmpty()
+                .hasSize(4);
+    }
+
+    @Test
+    public void getAllDataFailTest() {
+        taskRepository.deleteAll();
+
+        List<Task> taskList = taskRepository.findAll();
+
+        assertThat(taskList)
+                .isEmpty();
     }
 }

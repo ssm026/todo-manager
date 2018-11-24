@@ -142,8 +142,8 @@ curl -X GET 'http://:server_url/api/v1/task?size=10&page=1'
 * **Request Example**
 ```
 curl -X POST 'http://:server_url/api/v1/task' -d '{
-    "name" : "집안일",
-    "referenceTaskIdList" : [1,2]
+    "name": "집안일",
+    "referenceTaskIdList": [1,2]
 }'
 ```
 
@@ -155,6 +155,12 @@ curl -X POST 'http://:server_url/api/v1/task' -d '{
 | page | Number | Optional | 1 | 페이지 번호(1부터 시작) |
 
 * **Response Example**
+```
+{
+    "code": "TM200",
+    "message": "success"
+}
+```
 ## Build And Run
 ### Prerequisites
 ### frontend 

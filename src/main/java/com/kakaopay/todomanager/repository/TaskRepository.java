@@ -6,10 +6,21 @@ package com.kakaopay.todomanager.repository;
  */
 
 import com.kakaopay.todomanager.entity.Task;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Integer> {
-    List<Task> findAll();
+    Page<Task> findAll(Pageable pageable);
+
+    List<Task> findByTaskIdInAndFinishFlag(List<Integer> taskIdList, Boolean finishFlag);
+
+    @Query(
+            value = "select task_id from task where finish_flag = ?1",
+            nativeQuery = true
+    )
+    List<Integer> findTaskIdByFinishFlag(Boolean finishFlag);
 }

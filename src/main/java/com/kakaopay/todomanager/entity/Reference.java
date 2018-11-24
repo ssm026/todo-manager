@@ -22,12 +22,13 @@ import javax.persistence.*;
 public class Reference {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Integer referenceId;
 
     private Integer referenceTaskId;
 
     @JsonIgnore
-    @ManyToOne(optional=false, fetch = FetchType.LAZY)
+    @ManyToOne(optional=false, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="task_id")
     private Task task;
 
