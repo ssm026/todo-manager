@@ -40,8 +40,121 @@
 * 할 일 완료시 고려사항
   * 참조된 할 일이 완료 됐는지 체크.
 
-## Backend API List
+## API specifications
+### Response Code List
+| code | 설명 |
+| :-----: | :----: |
+| TM200 | 성공 |
 
+### 공통 응답 구조
+* **code** : custom [응답코드](#response-code-list)
+* **message** : code 에 맵핑되는 메세지. code 가 TM200이 아닐경우 이 내용을 alert으로 보여준다.
+* **data** : 각 api 별 응답 데이터 object. 아래의 각 Response 규격에는 data key 하위의 내용만 기술한다.
+```
+{
+    "code" : "TM200",
+    "message" : "success",
+    "data" : {
+        "id" : 1,
+        "name" : "task"
+    }
+}
+```
+### 할 일 목록 조회
+* 할 일 목록을 조회하여 paging 응답
+#### Specification
+* **Method** : GET
+* **URL** : http://:server_url/api/v1/task
+* **Content-Type** : application/json
+* **Parameters**
+ 
+| 필드명 | 타입 | 필수여부 | 기본값 | 설명 |
+| :----: | :----: | :----: | :----: | :----: |
+| size | Number | Optional | 10 | 페이지당 사이즈 |
+| page | Number | Optional | 1 | 페이지 번호(1부터 시작) |
+
+* **Request Example**
+```
+curl -X GET 'http://:server_url/api/v1/task?size=10&page=1'
+```
+
+* **Response**
+
+| 필드명 | 필드명 | 필드명 | 타입 | 필수여부 | 기본값 | 설명 |
+| :----: | :----: | :----: | :----: | :----: | :----: | :----: |
+| taskList |  | | Array | Required | N/A | 조회 된 할 일 리스 |
+|  | taskId | | Number | Optional | N/A | 할 일 아이디 |
+|  | name | | String | Optional | N/A | 할 일 이름 |
+|  | finishFlag | | Boolean | Optional | N/A | 할 일 완료 여부 |
+|  | createTime | | String | Optional | N/A | 할 일 등록 시간 (YYYY-MM-DD HH:mm:ss) |
+|  | updateTime | | String | Optional | N/A | 할 일 수정 시간 (YYYY-MM-DD HH:mm:ss) |
+|  | referenceList | | Array | Optional | N/A | 참조 한 할 일리스트|
+|  |  | referenceTaskId | Number | Required | 1 | 참조 한 할 일 아이디 |
+| totalElements |  | | Number | Required | 1 | 페이지 번호(1부터 시작) |
+
+* **Response Example**
+```
+{
+    code: "TM200",
+    message: "success",
+    data: {
+        taskList: [
+            {
+                taskId: 1,
+                name: "집안일",
+                finishFlag: false,
+                createTime: "2018-11-24 14:56:56",
+                updateTime: null,
+                referenceList: [ ]
+            },
+            {
+                taskId: 2,
+                name: "빨래",
+                finishFlag: false,
+                createTime: "2018-11-24 14:56:56",
+                updateTime: null,
+                referenceList: [
+                    {
+                    referenceId: 1,
+                    referenceTaskId: 1
+                    }
+                ]
+            }
+        ],
+        totalElements: 4
+    }
+}
+```
+
+### 할 일 등록
+* 할 일을 등록한다.
+#### Specification
+* **Method** : POST
+* **URL** : http://:server_url/api/v1/task
+* **Content-Type** : application/json
+* **Parameters**
+ 
+| 필드명 | 타입 | 필수여부 | 기본값 | 설명 |
+| :----: | :----: | :----: | :----: | :----: |
+| name | String | Required | N/A | 할일 이름 |
+| referenceTaskIdList | Array | Optional | null | 참조 할 아이디 리스트 |
+
+* **Request Example**
+```
+curl -X POST 'http://:server_url/api/v1/task' -d '{
+    "name" : "집안일",
+    "referenceTaskIdList" : [1,2]
+}'
+```
+
+* **Response**
+
+| 필드명 | 타입 | 필수여부 | 기본값 | 설명 |
+| :----: | :----: | :----: | :----: | :----: |
+| size | Number | Optional | 10 | 페이지당 사이즈 |
+| page | Number | Optional | 1 | 페이지 번호(1부터 시작) |
+
+* **Response Example**
 ## Build And Run
 ### Prerequisites
 ### frontend 
