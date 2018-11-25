@@ -23,8 +23,7 @@
         </template>
 
         <!-- <template slot="finishFlag" slot-scop="row">
-          <span v-if="row.item.finishFlag == true">Y</span>
-          <span v-else>N</span>
+          {{ row.item.finishFlag }}
         </template>-->
 
         <template slot="finish" slot-scope="row">
@@ -130,7 +129,18 @@ export default {
         })
     },
     finish: function (taskId) {
-      alert(taskId)
+      this.$http.post(this.baseURI + '/api/v1/task' + '/' + taskId + '/finish')
+        .then((result) => {
+          if (result.data.code !== 'TM200') {
+            alert(result.data.message)
+          } else {
+            alert('할 일이 완료 되었습니다.')
+            this.reload()
+          }
+        })
+        .catch((error) => {
+          alert(error.body.message)
+        })
     }
   },
   beforeMount () {

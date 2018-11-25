@@ -5,7 +5,7 @@
     </b-input-group>
 
     <b-input-group v-for="size in ['sm']" :key="size" :size="size" class="mb-3" prepend="참조 리스트">
-      <b-form-input v-model="referenceTaskIdList"/>
+      <b-form-input disabled v-model="referenceTaskIdList"/>
       <select v-model="selected" v-on:change="setReferenceTaskIdList">
         <option v-for='taskId in taskIdList' v-bind:key="taskId" >
           {{ taskId }}
@@ -13,14 +13,13 @@
       </select>
     </b-input-group>
 
-    <b-input-group v-for="size in ['sm']" :key="size" :size="size" class="mb-3">
-      <b-input-group-append>
-        <b-btn v-on:click="deleteReferenceTaskIdList()" size="sm" text="참조삭제" variant="success">참조삭제</b-btn>
-      </b-input-group-append>
-      <b-input-group-append>
-        <b-btn v-on:click="registTask()" size="sm" text="등록" variant="success">등록</b-btn>
-      </b-input-group-append>
-    </b-input-group>
+    <div class="col-xs pb-1">
+        <b-btn v-on:click="clearAllFields()" size="sm" text="초기화" variant="primary">초기화</b-btn>
+        <b-btn v-on:click="registTask()" size="sm" text="등록" variant="primary">등록</b-btn>
+    </div>
+
+    <div>
+    </div>
   </div>
 </template>
 
@@ -42,6 +41,7 @@ export default {
       this.getNotFinishedTaskList()
       this.taskName = ''
       this.referenceTaskIdList = []
+      this.selected = 0
     },
     registTask: function () {
       const data = {'name': this.taskName, 'referenceTaskIdList': this.referenceTaskIdList}
@@ -74,8 +74,10 @@ export default {
     setReferenceTaskIdList: function () {
       this.referenceTaskIdList.push(this.selected)
     },
-    deleteReferenceTaskIdList: function () {
+    clearAllFields: function () {
+      this.taskName = ''
       this.referenceTaskIdList = []
+      this.selected = 0
     }
   },
   beforeMount () {

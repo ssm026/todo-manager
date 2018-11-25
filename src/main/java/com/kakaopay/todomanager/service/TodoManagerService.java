@@ -18,4 +18,6 @@ public interface TodoManagerService {
     void registTask(RegistTaskRequest request);
 
     void modifyTaskName(Integer taskId, UpdateTaskNameRequest request);
+
+    void finishTask(Integer taskId);
 }

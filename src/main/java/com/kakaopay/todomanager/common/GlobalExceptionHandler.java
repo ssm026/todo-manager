@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public TodoResult handle(HttpMessageNotReadableException e) {
         log.error("", e);
-        return TodoResult.makeErrorResult(ResponseCode.BAD_PARAMETER);
+        return TodoResult.makeErrorResult(ResponseCode.BAD_PARAMETER, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -73,6 +73,7 @@ public class GlobalExceptionHandler {
         return TodoResult.makeErrorResult(ResponseCode.BAD_PARAMETER, e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseBody
     public TodoResult handle(HttpServletRequest request, HttpRequestMethodNotSupportedException e) {
@@ -80,6 +81,7 @@ public class GlobalExceptionHandler {
         return TodoResult.makeErrorResult(ResponseCode.METHOD_NOT_ALLOWED);
     }
 
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     @ResponseBody
     public TodoResult handle(HttpServletRequest request, HttpMediaTypeNotSupportedException e) {

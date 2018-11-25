@@ -8,6 +8,7 @@ import com.kakaopay.todomanager.model.domain.TaskListResponse;
 import com.kakaopay.todomanager.model.domain.common.ResponseCode;
 import com.kakaopay.todomanager.model.domain.TaskIdListResponse;
 import com.kakaopay.todomanager.model.domain.common.TodoException;
+import com.kakaopay.todomanager.repository.ReferenceRepository;
 import com.kakaopay.todomanager.repository.TaskRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,9 @@ import java.util.List;
 public class TodoManagerServiceImpl implements TodoManagerService {
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private ReferenceRepository referenceRepository;
 
     @Override
     public TaskListResponse getTaskList(Pageable pageable) {
@@ -58,10 +62,10 @@ public class TodoManagerServiceImpl implements TodoManagerService {
     }
 
     private void checkFinishedTaskExist(List<Integer> referenceTaskIdList) {
-        List<Task> finishedTaskList = taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, true);
+        List<Task> finishedTaskList = taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, false);
         log.info("finishTaskList : {}", finishedTaskList);
-        if( !finishedTaskList.isEmpty() ) {
-            throw new TodoException(ResponseCode.FINISHED_TASK_EXIST);
+        if( referenceTaskIdList.size() != finishedTaskList.size() ) {
+            throw new TodoException(ResponseCode.INVALID_REFERENCE_ID);
         }
     }
 
@@ -74,6 +78,24 @@ public class TodoManagerServiceImpl implements TodoManagerService {
         }
 
         task.setName(request.getName());
+        task.setUpdateTime(new Date());
+        taskRepository.save(task);
+    }
+
+    @Override
+    public void finishTask(Integer taskId) {
+        Task task = taskRepository.findByTaskId(taskId);
+
+        if( null == task ) {
+            throw new TodoException(ResponseCode.NOT_FOUND);
+        }
+
+        // check 참조
+        if( 0 < referenceRepository.countNotFinishedReferenceCount(taskId) ) {
+            throw new TodoException(ResponseCode.REFERENCE_TASK_NOT_FINISHED);
+        }
+
+        task.setFinishFlag(true);
         task.setUpdateTime(new Date());
         taskRepository.save(task);
     }

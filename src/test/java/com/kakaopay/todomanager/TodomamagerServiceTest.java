@@ -58,6 +58,21 @@ public class TodomamagerServiceTest {
         assertThat(result.getTaskList()).hasSize(3);
     }
 
+    @Test
+    public void insertTaskTest() {
+        List<Integer> referenceTaskIdList = new ArrayList<Integer>();
+        referenceTaskIdList.add(1);
+        referenceTaskIdList.add(2);
+        RegistTaskRequest request = new RegistTaskRequest("집안일", referenceTaskIdList);
+
+        // check finished reference task
+        List<Task> notEmptyList = new ArrayList<Task>();
+        notEmptyList.add(new Task());
+        given(taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, false)).willReturn(new ArrayList<Task>())
+        ;
+        todoManagerService.registTask(request);
+    }
+
     @Test(expected = TodoException.class)
     public void insertTaskFailTest() {
         List<Integer> referenceTaskIdList = new ArrayList<Integer>();
@@ -68,19 +83,9 @@ public class TodomamagerServiceTest {
         // check finished reference task
         List<Task> notEmptyList = new ArrayList<Task>();
         notEmptyList.add(new Task());
-        given(taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, true)).willReturn(notEmptyList)
+        given(taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, false)).willReturn(notEmptyList)
         ;
         todoManagerService.registTask(request);
-    }
-
-    @Test
-    public void insertTaskFailTest_referenceNotExist() {
-
-    }
-
-    @Test
-    public void insertTaskFailTest_maxNameLength() {
-
     }
 
     @Test
@@ -98,7 +103,7 @@ public class TodomamagerServiceTest {
     }
 
     @Test
-    public void modifyTaskName() {
+    public void modifyTaskNameTest() {
         UpdateTaskNameRequest request = new UpdateTaskNameRequest();
         request.setName("청소");
 
@@ -114,7 +119,7 @@ public class TodomamagerServiceTest {
     }
 
     @Test(expected = TodoException.class)
-    public void modifyTaskFailTest() {
+    public void modifyTaskFailTest_notFound() {
         UpdateTaskNameRequest request = new UpdateTaskNameRequest();
         request.setName("청소");
 
@@ -125,5 +130,41 @@ public class TodomamagerServiceTest {
         given(taskRepository.findByTaskId(taskId)).willReturn(null);
 
         todoManagerService.modifyTaskName(taskId, request);
+    }
+
+    @Test
+    public void finishTaskTest() {
+        Integer taskId = 1;
+        Task task = Task.builder().name("빨래").createTime(new Date()).finishFlag(false).build();
+        task.setTaskId(taskId);
+
+        given(taskRepository.findByTaskId(taskId)).willReturn(task);
+        task.setFinishFlag(true);
+        given(taskRepository.save(task)).willReturn(task);
+
+        todoManagerService.finishTask(taskId);
+    }
+
+    @Test(expected = TodoException.class)
+    public void finishTaskFailTest_notExist() {
+        Integer taskId = 1;
+        Task task = Task.builder().name("빨래").createTime(new Date()).finishFlag(false).build();
+        task.setTaskId(taskId);
+
+        given(taskRepository.findByTaskId(taskId)).willReturn(null);
+
+        todoManagerService.finishTask(taskId);
+    }
+
+    @Test(expected = TodoException.class)
+    public void finishTaskFailTest_referenceTaskNotFinished() {
+        Integer taskId = 1;
+        Task task = Task.builder().name("빨래").createTime(new Date()).finishFlag(false).build();
+        task.setTaskId(taskId);
+
+        given(taskRepository.findByTaskId(taskId)).willReturn(null);
+        given(referenceRepository.countNotFinishedReferenceCount(taskId)).willReturn(1);
+
+        todoManagerService.finishTask(taskId);
     }
 }

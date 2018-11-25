@@ -25,7 +25,7 @@ public class TodoManagerController {
     private TodoManagerService todoManagerService;
 
     @GetMapping
-    public TodoResult getTodoTaskList(@PageableDefault(size=10, page=0) Pageable pageable) {
+    public TodoResult getTaskList(@PageableDefault(size=10, page=0) Pageable pageable) {
         log.info("page : {}", pageable);
         return TodoResult.makeSuccessResult(todoManagerService.getTaskList(pageable));
     }
@@ -36,20 +36,21 @@ public class TodoManagerController {
     }
 
     @PostMapping
-    public TodoResult registTodoTask(@RequestBody @Valid RegistTaskRequest request) {
+    public TodoResult registTask(@RequestBody @Valid RegistTaskRequest request) {
         todoManagerService.registTask(request);
         return TodoResult.makeSuccessResult();
     }
 
     @PatchMapping("/{taskId}")
-    public TodoResult modifyTodoTask(@RequestBody @Valid UpdateTaskNameRequest request,
+    public TodoResult modifyTask(@RequestBody @Valid UpdateTaskNameRequest request,
                                      @PathVariable(name = "taskId") Integer taskId) {
         todoManagerService.modifyTaskName(taskId, request);
         return TodoResult.makeSuccessResult();
     }
 
     @PostMapping("/{taskId}/finish")
-    public TodoResult finishTask() {
+    public TodoResult finishTask(@PathVariable(name = "taskId") Integer taskId) {
+        todoManagerService.finishTask(taskId);
         return TodoResult.makeSuccessResult();
     }
 }
