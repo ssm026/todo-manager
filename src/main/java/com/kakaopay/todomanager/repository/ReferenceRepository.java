@@ -1,11 +1,8 @@
 package com.kakaopay.todomanager.repository;
 
-import com.kakaopay.todomanager.entity.Reference;
+import com.kakaopay.todomanager.model.entity.Reference;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
-import java.sql.Ref;
-import java.util.List;
 
 /**
  * Created by jyp on 2018. 11. 23.

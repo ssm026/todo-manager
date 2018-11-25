@@ -21,6 +21,12 @@
             {{ reference.referenceTaskId }}
           </span> -->
         </template>
+
+        <!-- <template slot="finishFlag" slot-scop="row">
+          <span v-if="row.item.finishFlag == true">Y</span>
+          <span v-else>N</span>
+        </template>-->
+
         <template slot="finish" slot-scope="row">
           <b-button :disabled="row.item.finishFlag == true" variant="primary" size="sm" @click.stop="finish(row.item.taskId)" >
             완료
@@ -44,6 +50,7 @@ export default {
   },
   data () {
     return {
+      baseURI: 'http://127.0.0.1:8080',
       taskList: [],
       totalElements: 1,
       currentPage: 1,
@@ -88,22 +95,39 @@ export default {
   },
   methods: {
     getTaskList: function () {
-      const baseURI = 'http://127.0.0.1:8080'
       const page = this.currentPage
       const param = `?page=${page}&size=${this.perPage}`
-      this.$http.get(baseURI + '/api/v1/task' + param).then(
-        result => {
+      this.$http.get(this.baseURI + '/api/v1/task' + param)
+        .then((result) => {
+          if (result.data.code !== 'TM200') {
+            alert(result.data.message)
+            return
+          }
           this.taskList = result.data.data.taskList
           this.totalElements = result.data.data.totalElements
-        }
-      )
+        })
+        .catch((error) => {
+          alert(error.body.message)
+        })
       console.log(this.ids)
     },
     reload: function () {
       this.getTaskList(this.currentPage, this.perPage)
     },
     modify: function (taskId, name) {
-      alert(taskId + ' : ' + name)
+      const data = {'name': name}
+      this.$http.patch(this.baseURI + '/api/v1/task' + '/' + taskId, data)
+        .then((result) => {
+          if (result.data.code !== 'TM200') {
+            alert(result.data.message)
+          } else {
+            alert('수정 되었습니다.')
+            this.reload()
+          }
+        })
+        .catch((error) => {
+          alert(error.body.message)
+        })
     },
     finish: function (taskId) {
       alert(taskId)

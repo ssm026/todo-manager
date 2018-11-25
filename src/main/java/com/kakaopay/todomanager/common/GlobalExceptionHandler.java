@@ -1,8 +1,8 @@
 package com.kakaopay.todomanager.common;
 
-import com.kakaopay.todomanager.model.common.ResponseCode;
-import com.kakaopay.todomanager.model.common.TodoException;
-import com.kakaopay.todomanager.model.common.TodoResult;
+import com.kakaopay.todomanager.model.domain.common.ResponseCode;
+import com.kakaopay.todomanager.model.domain.common.TodoException;
+import com.kakaopay.todomanager.model.domain.common.TodoResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;

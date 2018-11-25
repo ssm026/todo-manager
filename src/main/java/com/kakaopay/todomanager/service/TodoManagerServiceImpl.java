@@ -1,18 +1,20 @@
 package com.kakaopay.todomanager.service;
 
-import com.kakaopay.todomanager.entity.Reference;
-import com.kakaopay.todomanager.entity.Task;
-import com.kakaopay.todomanager.model.RegistTaskRequest;
-import com.kakaopay.todomanager.model.TaskListResponse;
-import com.kakaopay.todomanager.model.common.ResponseCode;
-import com.kakaopay.todomanager.model.common.TaskIdListResponse;
-import com.kakaopay.todomanager.model.common.TodoException;
+import com.kakaopay.todomanager.model.domain.UpdateTaskNameRequest;
+import com.kakaopay.todomanager.model.entity.Reference;
+import com.kakaopay.todomanager.model.entity.Task;
+import com.kakaopay.todomanager.model.domain.RegistTaskRequest;
+import com.kakaopay.todomanager.model.domain.TaskListResponse;
+import com.kakaopay.todomanager.model.domain.common.ResponseCode;
+import com.kakaopay.todomanager.model.domain.TaskIdListResponse;
+import com.kakaopay.todomanager.model.domain.common.TodoException;
 import com.kakaopay.todomanager.repository.TaskRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,22 +41,12 @@ public class TodoManagerServiceImpl implements TodoManagerService {
 
     @Override
     public void registTask(RegistTaskRequest request) {
-        boolean isReferenceTaskIdListEmpty = true;
-        // find not finished task
-        if( null != request.getReferenceTaskIdList() && !request.getReferenceTaskIdList().isEmpty() ) {
-            isReferenceTaskIdListEmpty = false;
-
-            List<Task> finishedTaskList = taskRepository.findByTaskIdInAndFinishFlag(request.getReferenceTaskIdList(), true);
-            log.info("finishTaskList : {}", finishedTaskList);
-            if( !finishedTaskList.isEmpty() ) {
-                throw new TodoException(ResponseCode.FINISHED_TASK_EXIST);
-            }
-        }
-
         // insert
         Task task = Task.builder().name(request.getName()).build();
 
-        if( !isReferenceTaskIdListEmpty ) {
+        if( null != request.getReferenceTaskIdList() && !request.getReferenceTaskIdList().isEmpty() ) {
+            checkFinishedTaskExist(request.getReferenceTaskIdList());
+
             for( Integer referenceTaskId : request.getReferenceTaskIdList() ) {
                 Reference reference = Reference.builder().task(task).referenceTaskId(referenceTaskId).build();
                 task.getReferenceList().add(reference);
@@ -62,8 +54,27 @@ public class TodoManagerServiceImpl implements TodoManagerService {
             }
         }
 
-        log.info("ref : {}", task.getReferenceList());
+        taskRepository.save(task);
+    }
 
+    private void checkFinishedTaskExist(List<Integer> referenceTaskIdList) {
+        List<Task> finishedTaskList = taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, true);
+        log.info("finishTaskList : {}", finishedTaskList);
+        if( !finishedTaskList.isEmpty() ) {
+            throw new TodoException(ResponseCode.FINISHED_TASK_EXIST);
+        }
+    }
+
+    @Override
+    public void modifyTaskName(Integer taskId, UpdateTaskNameRequest request) {
+        Task task = taskRepository.findByTaskId(taskId);
+
+        if( null == task ) {
+            throw new TodoException(ResponseCode.NOT_FOUND);
+        }
+
+        task.setName(request.getName());
+        task.setUpdateTime(new Date());
         taskRepository.save(task);
     }
 }

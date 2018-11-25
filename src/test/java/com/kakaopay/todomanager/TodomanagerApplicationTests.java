@@ -1,8 +1,8 @@
 package com.kakaopay.todomanager;
 
 import com.kakaopay.todomanager.controller.TodoManagerController;
-import com.kakaopay.todomanager.model.common.ResponseCode;
-import com.kakaopay.todomanager.model.common.TodoResult;
+import com.kakaopay.todomanager.model.domain.common.ResponseCode;
+import com.kakaopay.todomanager.model.domain.common.TodoResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

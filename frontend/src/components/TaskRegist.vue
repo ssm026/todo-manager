@@ -1,7 +1,7 @@
 <template>
   <div class="w-50 mx-auto">
     <b-input-group v-for="size in ['sm']" :key="size" :size="size" class="mb-3" prepend="할일">
-      <b-form-input v-model="name"/>
+      <b-form-input v-model="taskName"/>
     </b-input-group>
 
     <b-input-group v-for="size in ['sm']" :key="size" :size="size" class="mb-3" prepend="참조 리스트">
@@ -32,6 +32,7 @@ export default {
       baseURI: 'http://127.0.0.1:8080',
       email: '',
       referenceTaskIdList: [],
+      taskName: '',
       taskIdList: [],
       selected: 0
     }
@@ -39,21 +40,35 @@ export default {
   methods: {
     reload: function () {
       this.getNotFinishedTaskList()
-      this.name = ''
+      this.taskName = ''
       this.referenceTaskIdList = []
     },
     registTask: function () {
-      const data = {'name': this.name, 'referenceTaskIdList': this.referenceTaskIdList}
+      const data = {'name': this.taskName, 'referenceTaskIdList': this.referenceTaskIdList}
       this.$http.post(this.baseURI + '/api/v1/task', data)
         .then((result) => {
-          this.$emit('task-regist')
+          if (result.data.code !== 'TM200') {
+            alert(result.data.message)
+            return
+          }
           this.reload()
+          this.$emit('task-regist')
+        })
+        .catch((error) => {
+          alert(error.body.message)
         })
     },
     getNotFinishedTaskList: function () {
       this.$http.get(this.baseURI + '/api/v1/task/id/list')
         .then((result) => {
+          if (result.data.code !== 'TM200') {
+            alert(result.data.message)
+            return
+          }
           this.taskIdList = result.data.data.taskIdList
+        })
+        .catch((error) => {
+          alert(error.body.message)
         })
     },
     setReferenceTaskIdList: function () {

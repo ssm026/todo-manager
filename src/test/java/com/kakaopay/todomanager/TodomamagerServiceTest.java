@@ -1,10 +1,11 @@
 package com.kakaopay.todomanager;
 
-import com.kakaopay.todomanager.entity.Task;
-import com.kakaopay.todomanager.model.RegistTaskRequest;
-import com.kakaopay.todomanager.model.TaskListResponse;
-import com.kakaopay.todomanager.model.common.TaskIdListResponse;
-import com.kakaopay.todomanager.model.common.TodoException;
+import com.kakaopay.todomanager.model.domain.UpdateTaskNameRequest;
+import com.kakaopay.todomanager.model.entity.Task;
+import com.kakaopay.todomanager.model.domain.RegistTaskRequest;
+import com.kakaopay.todomanager.model.domain.TaskListResponse;
+import com.kakaopay.todomanager.model.domain.TaskIdListResponse;
+import com.kakaopay.todomanager.model.domain.common.TodoException;
 import com.kakaopay.todomanager.repository.ReferenceRepository;
 import com.kakaopay.todomanager.repository.TaskRepository;
 import com.kakaopay.todomanager.service.TodoManagerService;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +32,7 @@ import static org.mockito.BDDMockito.given;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class TodomamagerServiceTest extends CommonTest {
+public class TodomamagerServiceTest {
     @Autowired
     private TodoManagerService todoManagerService;
 
@@ -93,5 +95,35 @@ public class TodomamagerServiceTest extends CommonTest {
         System.out.println(taskIdList.size());
 
         assertThat(result.getTaskIdList()).hasSize(2);
+    }
+
+    @Test
+    public void modifyTaskName() {
+        UpdateTaskNameRequest request = new UpdateTaskNameRequest();
+        request.setName("청소");
+
+        Integer taskId = 1;
+        Task task = Task.builder().name("빨래").createTime(new Date()).finishFlag(false).build();
+        task.setTaskId(taskId);
+
+       given(taskRepository.findByTaskId(taskId)).willReturn(task);
+       task.setName(request.getName());
+       given(taskRepository.save(task)).willReturn(task);
+
+        todoManagerService.modifyTaskName(taskId, request);
+    }
+
+    @Test(expected = TodoException.class)
+    public void modifyTaskFailTest() {
+        UpdateTaskNameRequest request = new UpdateTaskNameRequest();
+        request.setName("청소");
+
+        Integer taskId = 1;
+        Task task = Task.builder().name("빨래").createTime(new Date()).finishFlag(false).build();
+        task.setTaskId(taskId);
+
+        given(taskRepository.findByTaskId(taskId)).willReturn(null);
+
+        todoManagerService.modifyTaskName(taskId, request);
     }
 }

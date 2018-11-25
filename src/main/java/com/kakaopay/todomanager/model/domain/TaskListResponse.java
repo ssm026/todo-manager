@@ -1,7 +1,8 @@
-package com.kakaopay.todomanager.model;
+package com.kakaopay.todomanager.model.domain;
 
-import com.kakaopay.todomanager.entity.Task;
+import com.kakaopay.todomanager.model.entity.Task;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  */
 
 @Data
+@NoArgsConstructor
 public class TaskListResponse {
     List<Task> taskList;
     private long totalElements;

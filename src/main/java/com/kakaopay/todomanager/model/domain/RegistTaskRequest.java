@@ -1,8 +1,10 @@
-package com.kakaopay.todomanager.model;
+package com.kakaopay.todomanager.model.domain;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -11,15 +13,13 @@ import java.util.List;
  */
 
 @Data
+@NoArgsConstructor
 public class RegistTaskRequest {
     @NotEmpty
+    @Size(max = 32)
     private String name;
 
     private List<Integer> referenceTaskIdList;
-
-    public RegistTaskRequest() {
-
-    }
 
     public RegistTaskRequest(String name, List<Integer> referenceTaskIdList) {
         this.name = name;

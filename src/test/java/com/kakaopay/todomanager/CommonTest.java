@@ -1,7 +1,7 @@
 package com.kakaopay.todomanager;
 
-import com.kakaopay.todomanager.entity.Reference;
-import com.kakaopay.todomanager.entity.Task;
+import com.kakaopay.todomanager.model.entity.Reference;
+import com.kakaopay.todomanager.model.entity.Task;
 import com.kakaopay.todomanager.repository.TaskRepository;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;

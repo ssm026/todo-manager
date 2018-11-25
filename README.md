@@ -151,8 +151,40 @@ curl -X POST 'http://:server_url/api/v1/task' -d '{
 
 | 필드명 | 타입 | 필수여부 | 기본값 | 설명 |
 | :----: | :----: | :----: | :----: | :----: |
-| size | Number | Optional | 10 | 페이지당 사이즈 |
-| page | Number | Optional | 1 | 페이지 번호(1부터 시작) |
+|  |  |  |  |  |
+
+* **Response Example**
+```
+{
+    "code": "TM200",
+    "message": "success"
+}
+```
+
+### 할 일 이름 수정
+* 할 일 이름을 수정한다.
+#### Specification
+* **Method** : PATCH
+* **URL** : http://:server_url/api/v1/task/{taskId}
+* **Content-Type** : application/json
+* **Parameters**
+ 
+| 필드명 | 타입 | 필수여부 | 기본값 | 설명 |
+| :----: | :----: | :----: | :----: | :----: |
+| name | String | Required | N/A | 변경 할 할일 이름 |
+
+* **Request Example**
+```
+curl -X PATCH 'http://:server_url/api/v1/task/1' -d '{
+    "name": "집안일"
+}'
+```
+
+* **Response**
+
+| 필드명 | 타입 | 필수여부 | 기본값 | 설명 |
+| :----: | :----: | :----: | :----: | :----: |
+|  |  |  |  |  |
 
 * **Response Example**
 ```

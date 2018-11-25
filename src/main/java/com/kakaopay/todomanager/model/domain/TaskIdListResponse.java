@@ -1,6 +1,7 @@
-package com.kakaopay.todomanager.model.common;
+package com.kakaopay.todomanager.model.domain;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -10,12 +11,9 @@ import java.util.List;
  */
 
 @Data
+@NoArgsConstructor
 public class TaskIdListResponse {
     private List<Integer> taskIdList;
-
-    public TaskIdListResponse() {
-
-    }
 
     public TaskIdListResponse(List<Integer> taskIdList) {
         this.taskIdList = taskIdList;

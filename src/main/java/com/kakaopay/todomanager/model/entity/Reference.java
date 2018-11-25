@@ -1,18 +1,14 @@
-package com.kakaopay.todomanager.entity;
+package com.kakaopay.todomanager.model.entity;
 
 /**
  * Created by jyp on 2018. 11. 23.
  * Email :ssm027@gmail.com
  */
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 

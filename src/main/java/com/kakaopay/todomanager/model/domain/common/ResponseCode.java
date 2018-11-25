@@ -1,4 +1,4 @@
-package com.kakaopay.todomanager.model.common;
+package com.kakaopay.todomanager.model.domain.common;
 
 /**
  * Created by jyp on 2018. 11. 23.
@@ -8,6 +8,7 @@ package com.kakaopay.todomanager.model.common;
 public enum ResponseCode {
     SUCCESS("TM200", "success"),
     BAD_PARAMETER("TM400", "잘못된 입력값 입니다."),
+    NOT_FOUND("TM404", "요청한 할 일이 존재하지 않습니다."),
     METHOD_NOT_ALLOWED("TM405", "허용하지 않는 method 입니다."),
     MEDIA_TYPE_NOT_ALLOWED("TM415", "허용하지 않는 media type 입니다."),
     INTERNAL_SERVER_ERROR("TM500", "internal server error."),
