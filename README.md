@@ -60,7 +60,7 @@
 | TM601 | 참조된 할 일을 먼저 완료하세요. |
 
 ### 공통 응답 구조
-* **code** : custom [응답코드](#response-code-list)
+* **code** : custom [응답코드](#custom_response_code_list)
 * **message** : code 에 맵핑되는 메세지. code 가 TM200이 아닐경우 이 내용을 alert으로 보여준다.
 * **data** : 각 api 별 응답 데이터 object. 아래의 각 Response 규격에는 data key 하위의 내용만 기술한다.
 ```
