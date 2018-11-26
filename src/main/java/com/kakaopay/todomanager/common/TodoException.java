@@ -1,6 +1,6 @@
-package com.kakaopay.todomanager.model.domain.common;
+package com.kakaopay.todomanager.common;
 
-import com.kakaopay.todomanager.model.domain.common.ResponseCode;
+import com.kakaopay.todomanager.common.ResponseCode;
 import lombok.Data;
 
 /**

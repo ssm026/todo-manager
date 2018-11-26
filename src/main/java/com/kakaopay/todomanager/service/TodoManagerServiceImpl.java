@@ -1,13 +1,13 @@
 package com.kakaopay.todomanager.service;
 
-import com.kakaopay.todomanager.model.domain.UpdateTaskNameRequest;
+import com.kakaopay.todomanager.model.dto.UpdateTaskNameRequest;
 import com.kakaopay.todomanager.model.entity.Reference;
 import com.kakaopay.todomanager.model.entity.Task;
-import com.kakaopay.todomanager.model.domain.RegistTaskRequest;
-import com.kakaopay.todomanager.model.domain.TaskListResponse;
-import com.kakaopay.todomanager.model.domain.common.ResponseCode;
-import com.kakaopay.todomanager.model.domain.TaskIdListResponse;
-import com.kakaopay.todomanager.model.domain.common.TodoException;
+import com.kakaopay.todomanager.model.dto.RegistTaskRequest;
+import com.kakaopay.todomanager.model.dto.TaskListResponse;
+import com.kakaopay.todomanager.common.ResponseCode;
+import com.kakaopay.todomanager.model.dto.TaskIdListResponse;
+import com.kakaopay.todomanager.common.TodoException;
 import com.kakaopay.todomanager.repository.ReferenceRepository;
 import com.kakaopay.todomanager.repository.TaskRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -39,13 +39,11 @@ public class TodoManagerServiceImpl implements TodoManagerService {
 
     @Override
     public TaskIdListResponse getNotFinishedIdList() {
-        List<Integer> taskIdList = taskRepository.findTaskIdByFinishFlag(false);
-        return new TaskIdListResponse(taskIdList);
+        return new TaskIdListResponse(taskRepository.findTaskIdByFinishFlag(false));
     }
 
     @Override
     public void registTask(RegistTaskRequest request) {
-        // insert
         Task task = Task.builder().name(request.getName()).build();
 
         if( null != request.getReferenceTaskIdList() && !request.getReferenceTaskIdList().isEmpty() ) {

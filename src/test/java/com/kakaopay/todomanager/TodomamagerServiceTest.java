@@ -1,11 +1,11 @@
 package com.kakaopay.todomanager;
 
-import com.kakaopay.todomanager.model.domain.UpdateTaskNameRequest;
+import com.kakaopay.todomanager.model.dto.UpdateTaskNameRequest;
 import com.kakaopay.todomanager.model.entity.Task;
-import com.kakaopay.todomanager.model.domain.RegistTaskRequest;
-import com.kakaopay.todomanager.model.domain.TaskListResponse;
-import com.kakaopay.todomanager.model.domain.TaskIdListResponse;
-import com.kakaopay.todomanager.model.domain.common.TodoException;
+import com.kakaopay.todomanager.model.dto.RegistTaskRequest;
+import com.kakaopay.todomanager.model.dto.TaskListResponse;
+import com.kakaopay.todomanager.model.dto.TaskIdListResponse;
+import com.kakaopay.todomanager.common.TodoException;
 import com.kakaopay.todomanager.repository.ReferenceRepository;
 import com.kakaopay.todomanager.repository.TaskRepository;
 import com.kakaopay.todomanager.service.TodoManagerService;
@@ -42,8 +42,6 @@ public class TodomamagerServiceTest {
     @MockBean
     private ReferenceRepository referenceRepository;
 
-
-
     @Test
     public void getTaskListTest() {
         List<Task> taskList = new ArrayList<Task>();
@@ -65,26 +63,27 @@ public class TodomamagerServiceTest {
         referenceTaskIdList.add(2);
         RegistTaskRequest request = new RegistTaskRequest("집안일", referenceTaskIdList);
 
-        // check finished reference task
-        List<Task> notEmptyList = new ArrayList<Task>();
-        notEmptyList.add(new Task());
-        given(taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, false)).willReturn(new ArrayList<Task>())
+        // check valid reference task
+        List<Task> referenceIdList = new ArrayList<Task>();
+        referenceIdList.add(new Task());
+        referenceIdList.add(new Task());
+        given(taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, false)).willReturn(referenceIdList)
         ;
         todoManagerService.registTask(request);
     }
 
     @Test(expected = TodoException.class)
-    public void insertTaskFailTest() {
+    public void insertTaskFailTest_invalidReferenceIdList() {
         List<Integer> referenceTaskIdList = new ArrayList<Integer>();
         referenceTaskIdList.add(1);
         referenceTaskIdList.add(2);
         RegistTaskRequest request = new RegistTaskRequest("집안일", referenceTaskIdList);
 
-        // check finished reference task
-        List<Task> notEmptyList = new ArrayList<Task>();
-        notEmptyList.add(new Task());
-        given(taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, false)).willReturn(notEmptyList)
-        ;
+        // check valid reference task
+        List<Task> referenceIdList = new ArrayList<Task>();
+        referenceIdList.add(new Task());
+        given(taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, false)).willReturn(referenceIdList);
+
         todoManagerService.registTask(request);
     }
 
@@ -105,15 +104,15 @@ public class TodomamagerServiceTest {
     @Test
     public void modifyTaskNameTest() {
         UpdateTaskNameRequest request = new UpdateTaskNameRequest();
-        request.setName("청소");
+        request.setName("집안일");
 
         Integer taskId = 1;
         Task task = Task.builder().name("빨래").createTime(new Date()).finishFlag(false).build();
         task.setTaskId(taskId);
 
-       given(taskRepository.findByTaskId(taskId)).willReturn(task);
-       task.setName(request.getName());
-       given(taskRepository.save(task)).willReturn(task);
+        given(taskRepository.findByTaskId(taskId)).willReturn(task);
+        task.setName(request.getName());
+        given(taskRepository.save(task)).willReturn(task);
 
         todoManagerService.modifyTaskName(taskId, request);
     }

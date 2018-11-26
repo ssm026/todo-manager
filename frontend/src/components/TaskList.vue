@@ -49,7 +49,6 @@ export default {
   },
   data () {
     return {
-      baseURI: 'http://127.0.0.1:8080',
       taskList: [],
       totalElements: 1,
       currentPage: 1,
@@ -83,8 +82,7 @@ export default {
           key: 'finish',
           label: '완료'
         }
-      ],
-      ids: new Set()
+      ]
     }
   },
   computed: {
@@ -96,7 +94,7 @@ export default {
     getTaskList: function () {
       const page = this.currentPage
       const param = `?page=${page}&size=${this.perPage}`
-      this.$http.get(this.baseURI + '/api/v1/task' + param)
+      this.$http.get('/api/v1/task' + param)
         .then((result) => {
           if (result.data.code !== 'TM200') {
             alert(result.data.message)
@@ -115,7 +113,7 @@ export default {
     },
     modify: function (taskId, name) {
       const data = {'name': name}
-      this.$http.patch(this.baseURI + '/api/v1/task' + '/' + taskId, data)
+      this.$http.patch('/api/v1/task' + '/' + taskId, data)
         .then((result) => {
           if (result.data.code !== 'TM200') {
             alert(result.data.message)
@@ -129,7 +127,7 @@ export default {
         })
     },
     finish: function (taskId) {
-      this.$http.post(this.baseURI + '/api/v1/task' + '/' + taskId + '/finish')
+      this.$http.post('/api/v1/task' + '/' + taskId + '/finish')
         .then((result) => {
           if (result.data.code !== 'TM200') {
             alert(result.data.message)

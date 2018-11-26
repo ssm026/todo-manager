@@ -1,4 +1,4 @@
-package com.kakaopay.todomanager.model.domain.common;
+package com.kakaopay.todomanager.common;
 
 /**
  * Created by jyp on 2018. 11. 23.

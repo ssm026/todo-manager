@@ -1,4 +1,4 @@
-package com.kakaopay.todomanager.model.domain;
+package com.kakaopay.todomanager.model.dto;
 
 import com.kakaopay.todomanager.model.entity.Task;
 import lombok.Data;
@@ -15,7 +15,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class TaskListResponse {
-    List<Task> taskList;
+    private List<Task> taskList;
+
     private long totalElements;
 
     public TaskListResponse(Page<Task> taskPageInfo) {

@@ -1,36 +1,41 @@
 package com.kakaopay.todomanager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kakaopay.todomanager.controller.TodoManagerController;
-import com.kakaopay.todomanager.model.domain.RegistTaskRequest;
-import com.kakaopay.todomanager.model.domain.UpdateTaskNameRequest;
-import com.kakaopay.todomanager.model.domain.common.ResponseCode;
-import com.kakaopay.todomanager.model.domain.common.TodoResult;
+import com.kakaopay.todomanager.model.dto.RegistTaskRequest;
+import com.kakaopay.todomanager.model.dto.UpdateTaskNameRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class TodomanagerApplicationTests extends CommonTest {
-    @Autowired
-    private TestRestTemplate testRestTemplate;
+public class TodomanagerControllerTests extends CommonTest {
+
+    @Test
+    public void methodNotAllowedTest() throws Exception {
+        mockMvc.perform(delete("/api/v1/task/1"))
+                .andExpect(status().isMethodNotAllowed());
+    }
+
+    @Test
+    public void unsupportedMediaTest() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        RegistTaskRequest request = new RegistTaskRequest();
+        request.setName("집안일");
+
+        mockMvc.perform(post("/api/v1/task")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isUnsupportedMediaType());
+    }
 
     @Test
     public void getTaskListTest() throws Exception {

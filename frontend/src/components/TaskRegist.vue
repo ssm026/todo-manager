@@ -28,7 +28,6 @@ export default {
   name: 'TaskRegist',
   data () {
     return {
-      baseURI: 'http://127.0.0.1:8080',
       email: '',
       referenceTaskIdList: [],
       taskName: '',
@@ -45,7 +44,7 @@ export default {
     },
     registTask: function () {
       const data = {'name': this.taskName, 'referenceTaskIdList': this.referenceTaskIdList}
-      this.$http.post(this.baseURI + '/api/v1/task', data)
+      this.$http.post('/api/v1/task', data)
         .then((result) => {
           if (result.data.code !== 'TM200') {
             alert(result.data.message)
@@ -59,7 +58,7 @@ export default {
         })
     },
     getNotFinishedTaskList: function () {
-      this.$http.get(this.baseURI + '/api/v1/task/id/list')
+      this.$http.get('/api/v1/task/id/list')
         .then((result) => {
           if (result.data.code !== 'TM200') {
             alert(result.data.message)

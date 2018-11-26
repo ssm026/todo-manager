@@ -1,9 +1,9 @@
 package com.kakaopay.todomanager.service;
 
-import com.kakaopay.todomanager.model.domain.RegistTaskRequest;
-import com.kakaopay.todomanager.model.domain.TaskListResponse;
-import com.kakaopay.todomanager.model.domain.TaskIdListResponse;
-import com.kakaopay.todomanager.model.domain.UpdateTaskNameRequest;
+import com.kakaopay.todomanager.model.dto.RegistTaskRequest;
+import com.kakaopay.todomanager.model.dto.TaskListResponse;
+import com.kakaopay.todomanager.model.dto.TaskIdListResponse;
+import com.kakaopay.todomanager.model.dto.UpdateTaskNameRequest;
 import org.springframework.data.domain.Pageable;
 
 /**

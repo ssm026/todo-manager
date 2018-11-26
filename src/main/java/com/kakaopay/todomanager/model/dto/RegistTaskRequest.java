@@ -1,4 +1,4 @@
-package com.kakaopay.todomanager.model.domain;
+package com.kakaopay.todomanager.model.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -5,9 +5,9 @@ package com.kakaopay.todomanager.controller;
  * Email :ssm027@gmail.com
  */
 
-import com.kakaopay.todomanager.model.domain.RegistTaskRequest;
-import com.kakaopay.todomanager.model.domain.UpdateTaskNameRequest;
-import com.kakaopay.todomanager.model.domain.common.TodoResult;
+import com.kakaopay.todomanager.model.dto.RegistTaskRequest;
+import com.kakaopay.todomanager.model.dto.UpdateTaskNameRequest;
+import com.kakaopay.todomanager.common.TodoResult;
 import com.kakaopay.todomanager.service.TodoManagerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,6 @@ public class TodoManagerController {
 
     @GetMapping
     public TodoResult getTaskList(@PageableDefault(size=10, page=0) Pageable pageable) {
-        log.info("page : {}", pageable);
         return TodoResult.makeSuccessResult(todoManagerService.getTaskList(pageable));
     }
 
@@ -42,7 +41,7 @@ public class TodoManagerController {
     }
 
     @PatchMapping("/{taskId}")
-    public TodoResult modifyTask(@RequestBody @Valid UpdateTaskNameRequest request,
+    public TodoResult modifyTaskName(@RequestBody @Valid UpdateTaskNameRequest request,
                                      @PathVariable(name = "taskId") Integer taskId) {
         todoManagerService.modifyTaskName(taskId, request);
         return TodoResult.makeSuccessResult();
