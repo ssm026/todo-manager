@@ -25,7 +25,7 @@ public class TodoResult {
         result.setCode(ResponseCode.SUCCESS.getCode());
         result.setMessage(ResponseCode.SUCCESS.getMessage());
 
-        log.info("Response : [{}]", result.getCode());
+        log.info("Response : [{},{}]", result.getCode(), result.getMessage());
 
         return result;
     }
@@ -37,7 +37,7 @@ public class TodoResult {
         result.setMessage(ResponseCode.SUCCESS.getMessage());
         result.setData(data);
 
-        log.info("Response : [{}]", result.getCode());
+        log.info("Response : [{},{}]", result.getCode(), result.getMessage());
 
         return result;
     }

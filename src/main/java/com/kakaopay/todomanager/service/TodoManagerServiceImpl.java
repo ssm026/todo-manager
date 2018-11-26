@@ -52,7 +52,6 @@ public class TodoManagerServiceImpl implements TodoManagerService {
             for( Integer referenceTaskId : request.getReferenceTaskIdList() ) {
                 Reference reference = Reference.builder().task(task).referenceTaskId(referenceTaskId).build();
                 task.getReferenceList().add(reference);
-                log.info("task : {}", reference.getTask().getName());
             }
         }
 
@@ -74,6 +73,7 @@ public class TodoManagerServiceImpl implements TodoManagerService {
         if( null == task ) {
             throw new TodoException(ResponseCode.NOT_FOUND);
         }
+        log.info("{}", task);
 
         task.setName(request.getName());
         task.setUpdateTime(new Date());
@@ -87,8 +87,8 @@ public class TodoManagerServiceImpl implements TodoManagerService {
         if( null == task ) {
             throw new TodoException(ResponseCode.NOT_FOUND);
         }
+        log.info("{}", task);
 
-        // check 참조
         if( 0 < referenceRepository.countNotFinishedReferenceCount(taskId) ) {
             throw new TodoException(ResponseCode.REFERENCE_TASK_NOT_FINISHED);
         }
