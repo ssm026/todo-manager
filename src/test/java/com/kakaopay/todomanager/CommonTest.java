@@ -17,17 +17,8 @@ import java.util.Date;
  */
 public class CommonTest {
     @Autowired
-    private WebApplicationContext context;
-
-    @Autowired
     protected TaskRepository taskRepository;
 
-    MockMvc mockMvc;
-
-    @Before
-    public void init() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-    }
 
     @Before
     public void setData() {
