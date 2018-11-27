@@ -1,5 +1,8 @@
 package com.kakaopay.todomanager.common;
 
+import com.kakaopay.todomanager.common.model.ResponseCode;
+import com.kakaopay.todomanager.common.model.TodoException;
+import com.kakaopay.todomanager.common.model.TodoResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,12 +30,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(TodoException.class)
     @ResponseBody
     public TodoResult tcallExceptionHandler(HttpServletRequest request, TodoException ex) {
-        String customMessage = ex.getCustomMessage();
-        if (null != customMessage) {
-            log.error(customMessage);
-            return TodoResult.makeErrorResult(ex.getErrorCode(), customMessage);
-        }
-
         log.error(ex.getErrorCode().getMessage());
         return TodoResult.makeErrorResult(ex.getErrorCode());
     }
@@ -84,6 +82,13 @@ public class GlobalExceptionHandler {
     public TodoResult handle(HttpServletRequest request, HttpMediaTypeNotSupportedException e) {
         log.error(e.getMessage());
         return TodoResult.makeErrorResult(ResponseCode.MEDIA_TYPE_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseBody
+    public TodoResult handle(HttpServletRequest request, BadCredentialsException e) {
+        log.error(e.getMessage());
+        return TodoResult.makeErrorResult(ResponseCode.LOGIN_FAIL);
     }
 
     @ExceptionHandler(Exception.class)

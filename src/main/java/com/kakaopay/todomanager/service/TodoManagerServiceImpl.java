@@ -1,13 +1,12 @@
 package com.kakaopay.todomanager.service;
 
-import com.kakaopay.todomanager.model.dto.UpdateTaskNameRequest;
+import com.kakaopay.todomanager.model.dto.*;
+import com.kakaopay.todomanager.model.entity.Member;
 import com.kakaopay.todomanager.model.entity.Reference;
 import com.kakaopay.todomanager.model.entity.Task;
-import com.kakaopay.todomanager.model.dto.RegistTaskRequest;
-import com.kakaopay.todomanager.model.dto.TaskListResponse;
-import com.kakaopay.todomanager.common.ResponseCode;
-import com.kakaopay.todomanager.model.dto.TaskIdListResponse;
-import com.kakaopay.todomanager.common.TodoException;
+import com.kakaopay.todomanager.common.model.ResponseCode;
+import com.kakaopay.todomanager.common.model.TodoException;
+import com.kakaopay.todomanager.repository.MemberRepository;
 import com.kakaopay.todomanager.repository.ReferenceRepository;
 import com.kakaopay.todomanager.repository.TaskRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -32,22 +31,31 @@ public class TodoManagerServiceImpl implements TodoManagerService {
     @Autowired
     private ReferenceRepository referenceRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @Override
-    public TaskListResponse getTaskList(Pageable pageable) {
-         return new TaskListResponse(taskRepository.findAll(pageable));
+    public TaskListResponseDTO getTaskList(MemberDTO memberInfo, Pageable pageable) {
+        Member member = findMember(memberInfo);
+
+        return new TaskListResponseDTO(taskRepository.findByMember(member, pageable));
     }
 
     @Override
-    public TaskIdListResponse getNotFinishedIdList() {
-        return new TaskIdListResponse(taskRepository.findTaskIdByFinishFlag(false));
+    public TaskIdListResponseDTO getNotFinishedIdList(MemberDTO memberInfo) {
+        Member member = findMember(memberInfo);
+
+        return new TaskIdListResponseDTO(taskRepository.findTaskIdByMemberAndFinishFlag(member.getMemberId(),false));
     }
 
     @Override
-    public void registTask(RegistTaskRequest request) {
-        Task task = Task.builder().name(request.getName()).build();
+    public void registTask(MemberDTO memberInfo, RegistTaskRequestDTO request) {
+        Member member = findMember(memberInfo);
+
+        Task task = Task.builder().member(member).name(request.getName()).build();
 
         if( null != request.getReferenceTaskIdList() && !request.getReferenceTaskIdList().isEmpty() ) {
-            checkFinishedTaskExist(request.getReferenceTaskIdList());
+            checkRequestReferenceValid(member, request.getReferenceTaskIdList());
 
             for( Integer referenceTaskId : request.getReferenceTaskIdList() ) {
                 Reference reference = Reference.builder().task(task).referenceTaskId(referenceTaskId).build();
@@ -58,8 +66,8 @@ public class TodoManagerServiceImpl implements TodoManagerService {
         taskRepository.save(task);
     }
 
-    private void checkFinishedTaskExist(List<Integer> referenceTaskIdList) {
-        List<Task> finishedTaskList = taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, false);
+    private void checkRequestReferenceValid(Member member, List<Integer> referenceTaskIdList) {
+        List<Task> finishedTaskList = taskRepository.findByMemberAndTaskIdInAndFinishFlag(member, referenceTaskIdList, false);
         log.info("finishTaskList : {}", finishedTaskList);
         if( referenceTaskIdList.size() != finishedTaskList.size() ) {
             throw new TodoException(ResponseCode.INVALID_REFERENCE_ID);
@@ -67,8 +75,10 @@ public class TodoManagerServiceImpl implements TodoManagerService {
     }
 
     @Override
-    public void modifyTaskName(Integer taskId, UpdateTaskNameRequest request) {
-        Task task = taskRepository.findByTaskId(taskId);
+    public void modifyTaskName(MemberDTO memberInfo, Integer taskId, UpdateTaskNameRequestDTO request) {
+        Member member = findMember(memberInfo);
+
+        Task task = taskRepository.findByMemberAndTaskId(member, taskId);
 
         if( null == task ) {
             throw new TodoException(ResponseCode.NOT_FOUND);
@@ -81,20 +91,31 @@ public class TodoManagerServiceImpl implements TodoManagerService {
     }
 
     @Override
-    public void finishTask(Integer taskId) {
-        Task task = taskRepository.findByTaskId(taskId);
+    public void finishTask(MemberDTO memberInfo, Integer taskId) {
+        Member member = findMember(memberInfo);
+
+        Task task = taskRepository.findByMemberAndTaskId(member, taskId);
 
         if( null == task ) {
             throw new TodoException(ResponseCode.NOT_FOUND);
         }
         log.info("{}", task);
 
-        if( 0 < referenceRepository.countNotFinishedReferenceCount(taskId) ) {
+        if( 0 < referenceRepository.countNotFinishedReferenceCount(member.getMemberId(), taskId) ) {
             throw new TodoException(ResponseCode.REFERENCE_TASK_NOT_FINISHED);
         }
 
         task.setFinishFlag(true);
         task.setUpdateTime(new Date());
         taskRepository.save(task);
+    }
+
+    private Member findMember(MemberDTO memberInfo) {
+        Member member = memberRepository.findByMemberId(memberInfo.getMemberId());
+
+        if( null == member ) {
+            throw new TodoException(ResponseCode.FORBIDDEN);
+        }
+        return member;
     }
 }

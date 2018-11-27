@@ -1,8 +1,9 @@
 package com.kakaopay.todomanager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kakaopay.todomanager.model.dto.RegistTaskRequest;
-import com.kakaopay.todomanager.model.dto.UpdateTaskNameRequest;
+import com.kakaopay.todomanager.model.dto.MemberDTO;
+import com.kakaopay.todomanager.model.dto.RegistTaskRequestDTO;
+import com.kakaopay.todomanager.model.dto.UpdateTaskNameRequestDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class TodomanagerControllerTests extends CommonTest {
+public class TodomanagerControllerTest extends CommonTest {
     @Autowired
     private WebApplicationContext context;
 
@@ -42,7 +43,7 @@ public class TodomanagerControllerTests extends CommonTest {
     @Test
     public void unsupportedMediaTest() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        RegistTaskRequest request = new RegistTaskRequest();
+        RegistTaskRequestDTO request = new RegistTaskRequestDTO();
         request.setName("집안일");
 
         mockMvc.perform(post("/api/v1/task")
@@ -69,7 +70,7 @@ public class TodomanagerControllerTests extends CommonTest {
     @Test
     public void registTaskTest() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        RegistTaskRequest request = new RegistTaskRequest();
+        RegistTaskRequestDTO request = new RegistTaskRequestDTO();
         request.setName("집안일");
 
         mockMvc.perform(post("/api/v1/task")
@@ -81,7 +82,7 @@ public class TodomanagerControllerTests extends CommonTest {
     @Test
     public void registTaskFailTest_nameMaxLength() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        RegistTaskRequest request = new RegistTaskRequest();
+        RegistTaskRequestDTO request = new RegistTaskRequestDTO();
         request.setName("1234567890123456789012345678901234");
 
         mockMvc.perform(post("/api/v1/task")
@@ -93,7 +94,7 @@ public class TodomanagerControllerTests extends CommonTest {
     @Test
     public void modifyTaskTest() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        UpdateTaskNameRequest request = new UpdateTaskNameRequest();
+        UpdateTaskNameRequestDTO request = new UpdateTaskNameRequestDTO();
         request.setName("청소");
 
         mockMvc.perform(patch("/api/v1/task/1")
@@ -105,7 +106,7 @@ public class TodomanagerControllerTests extends CommonTest {
     @Test
     public void modifyTaskFailTest_nameMaxLength() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        UpdateTaskNameRequest request = new UpdateTaskNameRequest();
+        UpdateTaskNameRequestDTO request = new UpdateTaskNameRequestDTO();
         request.setName("1234567890123456789012345678901234");
 
         mockMvc.perform(patch("/api/v1/task/1")
@@ -118,6 +119,17 @@ public class TodomanagerControllerTests extends CommonTest {
     public void finishTaskTest() throws Exception {
         mockMvc.perform(post("/api/v1/task/1/finish")
                 .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void joinMemberTest() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        MemberDTO memberDTO = MemberDTO.builder().name("test").password("test").build();
+
+        mockMvc.perform(post("/api/v1/member/join")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(memberDTO)))
                 .andExpect(status().isOk());
     }
 }

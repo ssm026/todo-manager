@@ -45,6 +45,7 @@
     * 순환참조 이슈 방지를 위해 할 일 이름만 변경 가능.
 * 할 일 완료시 고려사항
   * 참조된 할 일이 완료 됐는지 체크.
+* Spring Security 사용하여 회원 관리
 
 ## 3.API specifications
 ### Custom Response Code List
@@ -58,6 +59,7 @@
 | TM500 | 요청이 실패했습니다. |
 | TM600 | 참조 불가능한 ID 가 포함되어있습니다. |
 | TM601 | 참조된 할 일을 먼저 완료하세요. |
+| TM602 |  아이디와 비밀번호를 확인해주세요. |
 
 ### 공통 응답 구조
 * **code** : custom 응답코드
@@ -79,6 +81,77 @@
     }
 }
 ```
+
+### 회원가입
+* 회원가입.
+#### Specification
+* **Method** : POST
+* **URL** : http://:server_url/api/v1/member/join
+* **Content-Type** : application/json
+* **Parameters**
+ 
+| 필드명 | 타입 | 필수여부 | 기본값 | 설명 |
+| :----: | :----: | :----: | :----: | :----: |
+| name | String | Required | N/A | 유저명(아이디) |
+| password | String | Required | N/A | 비밀번호 |
+
+* **Request Example**
+```
+curl -X POST 'http://:server_url/api/v1/member/finish' -d '{
+    "name": "jyp",
+    "password": "1234567890"
+}'
+```
+
+* **Response**
+
+| 필드명 | 타입 | 필수여부 | 기본값 | 설명 |
+| :----: | :----: | :----: | :----: | :----: |
+|  |  |  |  |  |
+
+* **Response Example**
+```
+{
+    "code": "TM200",
+    "message": "success"
+}
+```
+
+### 로그인
+* 로그인.
+#### Specification
+* **Method** : POST
+* **URL** : http://:server_url/api/v1/member/login
+* **Content-Type** : application/json
+* **Parameters**
+ 
+| 필드명 | 타입 | 필수여부 | 기본값 | 설명 |
+| :----: | :----: | :----: | :----: | :----: |
+| name | String | Required | N/A | 유저명(아이디) |
+| password | String | Required | N/A | 비밀번호 |
+
+* **Request Example**
+```
+curl -X POST 'http://:server_url/api/v1/member/login' -d '{
+    "name": "jyp",
+    "password": "1234567890"
+}'
+```
+
+* **Response**
+
+| 필드명 | 타입 | 필수여부 | 기본값 | 설명 |
+| :----: | :----: | :----: | :----: | :----: |
+|  |  |  |  |  |
+
+* **Response Example**
+```
+{
+    "code": "TM200",
+    "message": "success"
+}
+```
+
 ### 할 일 목록 조회
 * 할 일 목록을 조회하여 paging 응답
 #### Specification
@@ -284,7 +357,7 @@ curl -X POST 'http://:server_url/api/v1/task/1/finish' -d '{
 ## 4.How to Run
 ### Prerequisites
 * JAVA 1.8
-* node.js, npm
+* node.js ( >= 10.11.0 )
 ### Clone code
 ```
 $ git clone https://github.com/ssm026/todo-manager

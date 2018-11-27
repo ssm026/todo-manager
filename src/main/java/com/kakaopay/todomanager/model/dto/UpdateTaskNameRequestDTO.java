@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
  */
 
 @Data
-public class UpdateTaskNameRequest {
+public class UpdateTaskNameRequestDTO {
     @NotEmpty
     @Size(max = 32)
     private String name;

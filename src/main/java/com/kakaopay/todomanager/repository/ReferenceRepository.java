@@ -11,9 +11,9 @@ import org.springframework.data.jpa.repository.Query;
 public interface ReferenceRepository extends JpaRepository<Reference, Integer> {
     @Query(
             value = "select count(1) " +
-                    "from reference r join task t on (r.task_id = t.task_id and t.finish_flag = false) " +
-                    "where r.reference_task_id = ?1",
+                    "from reference r join task t on (t.member_id = ?1 and r.task_id = t.task_id and t.finish_flag = false) " +
+                    "where r.reference_task_id = ?2",
             nativeQuery = true
     )
-    Integer countNotFinishedReferenceCount(Integer taskId);
+    Integer countNotFinishedReferenceCount(Integer memberId, Integer taskId);
 }

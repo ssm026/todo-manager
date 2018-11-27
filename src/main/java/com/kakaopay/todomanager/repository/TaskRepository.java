@@ -5,6 +5,7 @@ package com.kakaopay.todomanager.repository;
  * Email :ssm027@gmail.com
  */
 
+import com.kakaopay.todomanager.model.entity.Member;
 import com.kakaopay.todomanager.model.entity.Task;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,15 +15,15 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Integer> {
-    Page<Task> findAll(Pageable pageable);
+    Page<Task> findByMember(Member member, Pageable pageable);
 
-    List<Task> findByTaskIdInAndFinishFlag(List<Integer> taskIdList, Boolean finishFlag);
+    List<Task> findByMemberAndTaskIdInAndFinishFlag(Member member, List<Integer> taskIdList, Boolean finishFlag);
 
     @Query(
-            value = "select task_id from task where finish_flag = ?1",
+            value = "select task_id from task where member_id = ?1 AND finish_flag = ?2",
             nativeQuery = true
     )
-    List<Integer> findTaskIdByFinishFlag(Boolean finishFlag);
+    List<Integer> findTaskIdByMemberAndFinishFlag(Integer memberId, Boolean finishFlag);
 
-    Task findByTaskId(Integer taskId);
+    Task findByMemberAndTaskId(Member member, Integer taskId);
 }

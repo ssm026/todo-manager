@@ -14,12 +14,12 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class TaskListResponse {
+public class TaskListResponseDTO {
     private List<Task> taskList;
 
     private long totalElements;
 
-    public TaskListResponse(Page<Task> taskPageInfo) {
+    public TaskListResponseDTO(Page<Task> taskPageInfo) {
         this.taskList = taskPageInfo.getContent();
         this.totalElements = taskPageInfo.getTotalElements();
     }

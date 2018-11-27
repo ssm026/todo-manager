@@ -1,13 +1,13 @@
 package com.kakaopay.todomanager;
 
-import com.kakaopay.todomanager.model.dto.UpdateTaskNameRequest;
+import com.kakaopay.todomanager.model.dto.*;
+import com.kakaopay.todomanager.model.entity.Member;
 import com.kakaopay.todomanager.model.entity.Task;
-import com.kakaopay.todomanager.model.dto.RegistTaskRequest;
-import com.kakaopay.todomanager.model.dto.TaskListResponse;
-import com.kakaopay.todomanager.model.dto.TaskIdListResponse;
-import com.kakaopay.todomanager.common.TodoException;
+import com.kakaopay.todomanager.common.model.TodoException;
+import com.kakaopay.todomanager.repository.MemberRepository;
 import com.kakaopay.todomanager.repository.ReferenceRepository;
 import com.kakaopay.todomanager.repository.TaskRepository;
+import com.kakaopay.todomanager.service.MemberService;
 import com.kakaopay.todomanager.service.TodoManagerService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,66 +36,109 @@ public class TodomamagerServiceTest {
     @Autowired
     private TodoManagerService todoManagerService;
 
+    @Autowired
+    private MemberService memberService;
+
     @MockBean
     private TaskRepository taskRepository;
 
     @MockBean
     private ReferenceRepository referenceRepository;
 
+    @MockBean
+    private MemberRepository memberRepository;
+
+    @Autowired
+    private MemberRepository realMemberRepository;
+
     @Test
     public void getTaskListTest() {
+        Member member = Member.builder().memberId(1).name("test").password("test").build();
+        MemberDTO memberDTO = MemberDTO.builder().memberId(1).name("test").password("test").build();
         List<Task> taskList = new ArrayList<Task>();
         taskList.add(new Task());
         taskList.add(new Task());
         taskList.add(new Task());
         PageImpl pageData = new PageImpl(taskList,PageRequest.of(0,3),3);
-        given(taskRepository.findAll(PageRequest.of(0,3))).willReturn(pageData);
+        given(memberRepository.findByMemberId(1)).willReturn(member);
+        given(taskRepository.findByMember(member, PageRequest.of(0,3))).willReturn(pageData);
 
-        TaskListResponse result = todoManagerService.getTaskList(PageRequest.of(0,3));
+        TaskListResponseDTO result = todoManagerService.getTaskList(memberDTO, PageRequest.of(0,3));
 
         assertThat(result.getTaskList()).hasSize(3);
     }
 
     @Test
     public void insertTaskTest() {
+        Member member = Member.builder().memberId(1).name("test").password("test").build();
+        MemberDTO memberDTO = MemberDTO.builder().memberId(1).name("test").password("test").build();
+
         List<Integer> referenceTaskIdList = new ArrayList<Integer>();
         referenceTaskIdList.add(1);
         referenceTaskIdList.add(2);
-        RegistTaskRequest request = new RegistTaskRequest("집안일", referenceTaskIdList);
+        RegistTaskRequestDTO request = new RegistTaskRequestDTO("집안일", referenceTaskIdList);
 
         // check valid reference task
         List<Task> referenceIdList = new ArrayList<Task>();
         referenceIdList.add(new Task());
         referenceIdList.add(new Task());
-        given(taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, false)).willReturn(referenceIdList)
-        ;
-        todoManagerService.registTask(request);
+        given(memberRepository.findByMemberId(1)).willReturn(member);
+        given(taskRepository.findByMemberAndTaskIdInAndFinishFlag(member, referenceTaskIdList, false)).willReturn(referenceIdList);
+
+        todoManagerService.registTask(memberDTO, request);
     }
 
     @Test(expected = TodoException.class)
     public void insertTaskFailTest_invalidReferenceIdList() {
+        Member member = Member.builder().memberId(1).name("test").password("test").build();
+        MemberDTO memberDTO = MemberDTO.builder().memberId(1).name("test").password("test").build();
+
         List<Integer> referenceTaskIdList = new ArrayList<Integer>();
         referenceTaskIdList.add(1);
         referenceTaskIdList.add(2);
-        RegistTaskRequest request = new RegistTaskRequest("집안일", referenceTaskIdList);
+        RegistTaskRequestDTO request = new RegistTaskRequestDTO("집안일", referenceTaskIdList);
 
         // check valid reference task
         List<Task> referenceIdList = new ArrayList<Task>();
         referenceIdList.add(new Task());
-        given(taskRepository.findByTaskIdInAndFinishFlag(referenceTaskIdList, false)).willReturn(referenceIdList);
+        given(memberRepository.findByMemberId(1)).willReturn(member);
+        given(taskRepository.findByMemberAndTaskIdInAndFinishFlag(member, referenceTaskIdList, false)).willReturn(referenceIdList);
 
-        todoManagerService.registTask(request);
+        todoManagerService.registTask(memberDTO, request);
+    }
+
+    @Test(expected = TodoException.class)
+    public void insertTaskFailTest_memberNotExist() {
+        Member member = null;
+        MemberDTO memberDTO = MemberDTO.builder().memberId(1).name("test").password("test").build();
+
+        List<Integer> referenceTaskIdList = new ArrayList<Integer>();
+        referenceTaskIdList.add(1);
+        referenceTaskIdList.add(2);
+        RegistTaskRequestDTO request = new RegistTaskRequestDTO("집안일", referenceTaskIdList);
+
+        // check valid reference task
+        List<Task> referenceIdList = new ArrayList<Task>();
+        referenceIdList.add(new Task());
+        given(memberRepository.findByMemberId(1)).willReturn(member);
+        given(taskRepository.findByMemberAndTaskIdInAndFinishFlag(member, referenceTaskIdList, false)).willReturn(referenceIdList);
+
+        todoManagerService.registTask(memberDTO, request);
     }
 
     @Test
     public void getNotFinishedIdList() {
+        Member member = Member.builder().memberId(1).name("test").password("test").build();
+        MemberDTO memberDTO = MemberDTO.builder().memberId(1).name("test").password("test").build();
+
         List<Integer> taskIdList = new ArrayList<Integer>();
         taskIdList.add(1);
         taskIdList.add(2);
         System.out.println(taskIdList);
-        given(taskRepository.findTaskIdByFinishFlag(false)).willReturn(taskIdList);
+        given(memberRepository.findByMemberId(1)).willReturn(member);
+        given(taskRepository.findTaskIdByMemberAndFinishFlag(member.getMemberId(), false)).willReturn(taskIdList);
 
-        TaskIdListResponse result = todoManagerService.getNotFinishedIdList();
+        TaskIdListResponseDTO result = todoManagerService.getNotFinishedIdList(memberDTO);
         System.out.println(taskIdList.size());
 
         assertThat(result.getTaskIdList()).hasSize(2);
@@ -103,67 +146,107 @@ public class TodomamagerServiceTest {
 
     @Test
     public void modifyTaskNameTest() {
-        UpdateTaskNameRequest request = new UpdateTaskNameRequest();
+        Member member = Member.builder().memberId(1).name("test").password("test").build();
+        MemberDTO memberDTO = MemberDTO.builder().memberId(1).name("test").password("test").build();
+
+        UpdateTaskNameRequestDTO request = new UpdateTaskNameRequestDTO();
         request.setName("집안일");
 
         Integer taskId = 1;
         Task task = Task.builder().name("빨래").createTime(new Date()).finishFlag(false).build();
         task.setTaskId(taskId);
 
-        given(taskRepository.findByTaskId(taskId)).willReturn(task);
+        given(memberRepository.findByMemberId(1)).willReturn(member);
+        given(taskRepository.findByMemberAndTaskId(member, taskId)).willReturn(task);
         task.setName(request.getName());
         given(taskRepository.save(task)).willReturn(task);
 
-        todoManagerService.modifyTaskName(taskId, request);
+        todoManagerService.modifyTaskName(memberDTO, taskId, request);
     }
 
     @Test(expected = TodoException.class)
     public void modifyTaskFailTest_notFound() {
-        UpdateTaskNameRequest request = new UpdateTaskNameRequest();
+        Member member = Member.builder().memberId(1).name("test").password("test").build();
+        MemberDTO memberDTO = MemberDTO.builder().memberId(1).name("test").password("test").build();
+
+        UpdateTaskNameRequestDTO request = new UpdateTaskNameRequestDTO();
         request.setName("청소");
 
         Integer taskId = 1;
         Task task = Task.builder().name("빨래").createTime(new Date()).finishFlag(false).build();
         task.setTaskId(taskId);
 
-        given(taskRepository.findByTaskId(taskId)).willReturn(null);
+        given(memberRepository.findByMemberId(1)).willReturn(member);
+        given(taskRepository.findByMemberAndTaskId(member, taskId)).willReturn(null);
 
-        todoManagerService.modifyTaskName(taskId, request);
+        todoManagerService.modifyTaskName(memberDTO, taskId, request);
     }
 
     @Test
     public void finishTaskTest() {
+        Member member = Member.builder().memberId(1).name("test").password("test").build();
+        MemberDTO memberDTO = MemberDTO.builder().memberId(1).name("test").password("test").build();
+
         Integer taskId = 1;
         Task task = Task.builder().name("빨래").createTime(new Date()).finishFlag(false).build();
         task.setTaskId(taskId);
 
-        given(taskRepository.findByTaskId(taskId)).willReturn(task);
+        given(memberRepository.findByMemberId(1)).willReturn(member);
+        given(taskRepository.findByMemberAndTaskId(member, taskId)).willReturn(task);
         task.setFinishFlag(true);
         given(taskRepository.save(task)).willReturn(task);
 
-        todoManagerService.finishTask(taskId);
+        todoManagerService.finishTask(memberDTO, taskId);
     }
 
     @Test(expected = TodoException.class)
     public void finishTaskFailTest_notExist() {
+        Member member = Member.builder().memberId(1).name("test").password("test").build();
+        MemberDTO memberDTO = MemberDTO.builder().memberId(1).name("test").password("test").build();
+
         Integer taskId = 1;
         Task task = Task.builder().name("빨래").createTime(new Date()).finishFlag(false).build();
         task.setTaskId(taskId);
 
-        given(taskRepository.findByTaskId(taskId)).willReturn(null);
+        given(memberRepository.findByMemberId(1)).willReturn(member);
+        given(taskRepository.findByMemberAndTaskId(member, taskId)).willReturn(null);
 
-        todoManagerService.finishTask(taskId);
+        todoManagerService.finishTask(memberDTO, taskId);
     }
 
     @Test(expected = TodoException.class)
     public void finishTaskFailTest_referenceTaskNotFinished() {
+        Member member = Member.builder().memberId(1).name("test").password("test").build();
+        MemberDTO memberDTO = MemberDTO.builder().memberId(1).name("test").password("test").build();
+
         Integer taskId = 1;
         Task task = Task.builder().name("빨래").createTime(new Date()).finishFlag(false).build();
         task.setTaskId(taskId);
 
-        given(taskRepository.findByTaskId(taskId)).willReturn(null);
-        given(referenceRepository.countNotFinishedReferenceCount(taskId)).willReturn(1);
+        given(memberRepository.findByMemberId(1)).willReturn(member);
+        given(taskRepository.findByMemberAndTaskId(member, taskId)).willReturn(null);
+        given(referenceRepository.countNotFinishedReferenceCount(member.getMemberId(), taskId)).willReturn(1);
 
-        todoManagerService.finishTask(taskId);
+        todoManagerService.finishTask(memberDTO, taskId);
+    }
+
+    @Test
+    public void joinMemberTest() {
+        Member member = Member.builder().memberId(1).name("test123").password("test").build();
+        MemberDTO memberDTO = MemberDTO.builder().name("test123").password("test").build();
+
+        given(memberRepository.save(member)).willReturn(member);
+
+        memberService.joinMember(memberDTO);
+    }
+
+    @Test
+    public void joinMemberFailTest() {
+        Member member = Member.builder().name("test123").password("test").build();
+        MemberDTO memberDTO = MemberDTO.builder().name("test123").password("test").build();
+
+        realMemberRepository.save(member);
+
+        memberService.joinMember(memberDTO);
     }
 }

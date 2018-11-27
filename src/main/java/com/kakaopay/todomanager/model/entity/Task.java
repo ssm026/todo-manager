@@ -6,10 +6,12 @@ package com.kakaopay.todomanager.model.entity;
  */
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kakaopay.todomanager.model.entity.Reference;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -20,6 +22,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity(name = "task")
+@NoArgsConstructor
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,19 +40,21 @@ public class Task {
     private Date updateTime;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    @OneToMany(mappedBy = "task", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     List<Reference> referenceList;
 
-    public Task() {
-
-    }
+    @JsonIgnore
+    @ManyToOne(optional=false, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name="member_id")
+    private Member member;
 
     @Builder
-    public Task(String name, Boolean finishFlag, Date createTime, Date updateTime) {
+    public Task(String name, Boolean finishFlag, Date createTime, Date updateTime, Member member) {
         this.name = name;
         this.finishFlag = finishFlag;
         this.createTime = createTime;
         this.updateTime = updateTime;
         this.referenceList = new ArrayList<Reference>();
+        this.member = member;
     }
 }

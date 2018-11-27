@@ -12,10 +12,10 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class TaskIdListResponse {
+public class TaskIdListResponseDTO {
     private List<Integer> taskIdList;
 
-    public TaskIdListResponse(List<Integer> taskIdList) {
+    public TaskIdListResponseDTO(List<Integer> taskIdList) {
         this.taskIdList = taskIdList;
     }
 }

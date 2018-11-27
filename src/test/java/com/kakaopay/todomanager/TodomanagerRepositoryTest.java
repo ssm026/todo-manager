@@ -1,7 +1,9 @@
 package com.kakaopay.todomanager;
 
+import com.kakaopay.todomanager.model.entity.Member;
 import com.kakaopay.todomanager.model.entity.Task;
 import com.kakaopay.todomanager.model.entity.Reference;
+import com.kakaopay.todomanager.repository.MemberRepository;
 import com.kakaopay.todomanager.repository.ReferenceRepository;
 import com.kakaopay.todomanager.repository.TaskRepository;
 import org.junit.Test;
@@ -14,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 
 @RunWith(SpringRunner.class)
@@ -28,9 +31,16 @@ public class TodomanagerRepositoryTest extends CommonTest {
     @Autowired
     private ReferenceRepository referenceRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @Test
     public void insertTaskTest() {
-        Task task = Task.builder().name("task1").finishFlag(true).createTime(new Date()).build();
+        Member member = Member.builder().name(UUID.randomUUID().toString()).password("test").build();
+
+        Member savedMember = memberRepository.save(member);
+
+        Task task = Task.builder().member(savedMember).name("task1").finishFlag(true).createTime(new Date()).build();
         Reference reference = Reference.builder().task(task).referenceTaskId(3).build();
         task.getReferenceList().add(reference);
         testEntityManager.persist(task);
@@ -89,12 +99,20 @@ public class TodomanagerRepositoryTest extends CommonTest {
     }
 
     @Test
-    public void getAllDataFailTest() {
-        taskRepository.deleteAll();
+    public void joinMemberTest() {
+        Member member = Member.builder().name("test").password("test").build();
 
-        List<Task> taskList = taskRepository.findAll();
+        Member savedMember = memberRepository.save(member);
 
-        assertThat(taskList)
-                .isEmpty();
+        assertThat(savedMember).isNotNull();
+        assertThat(savedMember.getName()).isEqualTo(member.getName());
+    }
+
+    @Test
+    public void joinMemberFailTest() {
+        Member member = Member.builder().name("test").password("test").build();
+
+        Member savedMember1 = memberRepository.save(member);
+        Member savedMember2 = memberRepository.save(member);
     }
 }

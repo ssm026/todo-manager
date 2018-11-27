@@ -14,14 +14,14 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class RegistTaskRequest {
+public class RegistTaskRequestDTO {
     @NotEmpty
     @Size(max = 32)
     private String name;
 
     private List<Integer> referenceTaskIdList;
 
-    public RegistTaskRequest(String name, List<Integer> referenceTaskIdList) {
+    public RegistTaskRequestDTO(String name, List<Integer> referenceTaskIdList) {
         this.name = name;
         this.referenceTaskIdList = referenceTaskIdList;
     }

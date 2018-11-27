@@ -1,9 +1,6 @@
 package com.kakaopay.todomanager.service;
 
-import com.kakaopay.todomanager.model.dto.RegistTaskRequest;
-import com.kakaopay.todomanager.model.dto.TaskListResponse;
-import com.kakaopay.todomanager.model.dto.TaskIdListResponse;
-import com.kakaopay.todomanager.model.dto.UpdateTaskNameRequest;
+import com.kakaopay.todomanager.model.dto.*;
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -11,13 +8,13 @@ import org.springframework.data.domain.Pageable;
  * Email :ssm027@gmail.com
  */
 public interface TodoManagerService {
-    TaskListResponse getTaskList(Pageable pageable);
+    TaskListResponseDTO getTaskList(MemberDTO memberInfo, Pageable pageable);
 
-    TaskIdListResponse getNotFinishedIdList();
+    TaskIdListResponseDTO getNotFinishedIdList(MemberDTO memberInfo);
 
-    void registTask(RegistTaskRequest request);
+    void registTask(MemberDTO memberInfo, RegistTaskRequestDTO request);
 
-    void modifyTaskName(Integer taskId, UpdateTaskNameRequest request);
+    void modifyTaskName(MemberDTO memberInfo, Integer taskId, UpdateTaskNameRequestDTO request);
 
-    void finishTask(Integer taskId);
+    void finishTask(MemberDTO memberInfo, Integer taskId);
 }

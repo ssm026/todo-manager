@@ -54,7 +54,11 @@ export default {
           this.$emit('task-regist')
         })
         .catch((error) => {
-          alert(error.body.message)
+          if (error.status === 403) {
+            window.location.href = '/#/login'
+          } else {
+            alert(error.body.message)
+          }
         })
     },
     getNotFinishedTaskList: function () {
@@ -67,7 +71,11 @@ export default {
           this.taskIdList = result.data.data.taskIdList
         })
         .catch((error) => {
-          alert(error.body.message)
+          if (error.status === 403) {
+            window.location.href = '/#/login'
+          } else {
+            alert(error.body.message)
+          }
         })
     },
     setReferenceTaskIdList: function () {

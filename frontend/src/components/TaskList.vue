@@ -27,7 +27,7 @@
         </template>-->
 
         <template slot="finish" slot-scope="row">
-          <b-button :disabled="row.item.finishFlag == true" variant="primary" size="sm" @click.stop="finish(row.item.taskId)" >
+          <b-button :disabled="row.item.finishFlag == true" variant="primary" size="sm" @click.stop="finish(row.item.name, row.item.taskId)" >
             완료
           </b-button>
         </template>
@@ -37,6 +37,7 @@
     <b-pagination size="sm" align="center" :total-rows="totalElements" v-model="currentPage" :per-page="5" @input="getTaskList(currentPage, perPage)">
     </b-pagination>
     <br>
+    <b-btn v-on:click="logout()" size="sm" text="로그아웃" variant="primary">로그아웃</b-btn>
 </template>
 
 <script>
@@ -104,7 +105,11 @@ export default {
           this.totalElements = result.data.data.totalElements
         })
         .catch((error) => {
-          alert(error.body.message)
+          if (error.status === 403) {
+            window.location.href = '/#/login'
+          } else {
+            alert(error.body.message)
+          }
         })
       console.log(this.ids)
     },
@@ -123,21 +128,35 @@ export default {
           }
         })
         .catch((error) => {
-          alert(error.body.message)
+          if (error.status === 403) {
+            window.location.href = '/#/login'
+          } else {
+            alert(error.body.message)
+          }
         })
     },
-    finish: function (taskId) {
+    finish: function (name, taskId) {
       this.$http.post('/api/v1/task' + '/' + taskId + '/finish')
         .then((result) => {
           if (result.data.code !== 'TM200') {
             alert(result.data.message)
           } else {
-            alert('할 일이 완료 되었습니다.')
+            alert(name + ' 완료!')
             this.reload()
           }
         })
         .catch((error) => {
-          alert(error.body.message)
+          if (error.status === 403) {
+            window.location.href = '/#/login'
+          } else {
+            alert(error.body.message)
+          }
+        })
+    },
+    logout: function () {
+      this.$http.post('/logout')
+        .then((result) => {
+          window.location.href = '/#/login'
         })
     }
   },
