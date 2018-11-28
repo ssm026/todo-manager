@@ -111,7 +111,6 @@ export default {
             alert(error.body.message)
           }
         })
-      console.log(this.ids)
     },
     reload: function () {
       this.getTaskList(this.currentPage, this.perPage)

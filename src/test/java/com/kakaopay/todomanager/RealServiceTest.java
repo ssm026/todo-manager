@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 /**
@@ -24,7 +25,7 @@ public class RealServiceTest {
     @Autowired
     MemberService memberService;
 
-    @Test
+    @Test(expected = DataIntegrityViolationException.class)
     public void joinMemberFailTest_uniqueKey() {
         Member member = Member.builder().name("test123").password("test").build();
         MemberDTO memberDTO = MemberDTO.builder().name("test123").password("test").build();

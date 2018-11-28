@@ -1,6 +1,6 @@
 # TODO Task Manager
 
-## 1.Requirements
+## 1. Requirements
 * 사용자는 텍트스로 된 할 일을 추가 할 수 있다.
   * 할 일 추가 시 다른 할 일 들을 참조 걸 수 있다. 
   * 참조는 다른 할 일의 id를 명시하는 형태로 구현한다.
@@ -16,7 +16,7 @@
 * 단위테스트 필수, 통합테스트는 선택
 * README.md 파일에 문제해결 전략 및 프로젝트 빌드 실행방법 명시
 
-## 2.Problem Solving
+## 2. Problem Solving
 * frontend 기술 스택
   * vue.js 2.5.2, bootstrap, bootstrap-vue 활용.
   * Single Page Application 으로 개발.
@@ -47,8 +47,8 @@
   * 참조된 할 일이 완료 됐는지 체크.
 * Spring Security 사용하여 회원 관리
 
-## 3.API specifications
-### Custom Response Code List
+## 3. API specifications
+### 3.1 Custom Response Code List
 | code | 설명 |
 | :-----: | :----: |
 | TM200 | 성공 |
@@ -61,7 +61,7 @@
 | TM601 | 참조된 할 일을 먼저 완료하세요. |
 | TM602 |  아이디와 비밀번호를 확인해주세요. |
 
-### 공통 응답 구조
+### 3.2 공통 응답 구조
 * **code** : custom 응답코드
 * **message** : code 에 맵핑되는 메세지. code 가 TM200이 아닐경우 이 내용을 alert으로 보여준다.
 * **data** : 각 api 별 응답 데이터 object. 아래의 각 Response 규격에는 data key 하위의 내용만 기술한다.
@@ -82,7 +82,7 @@
 }
 ```
 
-### 회원가입
+### 3.3 회원가입
 * 회원가입.
 #### Specification
 * **Method** : POST
@@ -117,7 +117,7 @@ curl -X POST 'http://:server_url/api/v1/member/finish' -d '{
 }
 ```
 
-### 로그인
+### 3.4 로그인
 * 로그인.
 #### Specification
 * **Method** : POST
@@ -152,7 +152,7 @@ curl -X POST 'http://:server_url/api/v1/member/login' -d '{
 }
 ```
 
-### 할 일 목록 조회
+### 3.5 할 일 목록 조회
 * 할 일 목록을 조회하여 paging 응답
 #### Specification
 * **Method** : GET
@@ -218,7 +218,7 @@ curl -X GET 'http://:server_url/api/v1/task?size=10&page=1'
 }
 ```
 
-### 참조 가능 ID 리스트 조회
+### 3.6 참조 가능 ID 리스트 조회
 * 참조 가능한 ID 리스트를 조회한다.
 #### Specification
 * **Method** : GET
@@ -254,7 +254,7 @@ curl 'http://:server_url/api/v1/task/id/list
 }
 ```
 
-### 할 일 등록
+### 3.7 할 일 등록
 * 할 일을 등록한다.
 #### Specification
 * **Method** : POST
@@ -289,7 +289,7 @@ curl -X POST 'http://:server_url/api/v1/task' -d '{
 }
 ```
 
-### 할 일 이름 수정
+### 3.8 할 일 이름 수정
 * 할 일 이름을 수정한다.
 #### Specification
 * **Method** : PATCH
@@ -322,7 +322,7 @@ curl -X PATCH 'http://:server_url/api/v1/task/1' -d '{
 }
 ```
 
-### 할 일 완료
+### 3.9 할 일 완료
 * 할 일을 완료한다.
 #### Specification
 * **Method** : POST

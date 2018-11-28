@@ -9,7 +9,7 @@
     </b-input-group>
 
     <div class="col-xs pb-1">
-      <b-btn v-on:click="join()" size="sm" text="사용자 등록" variant="primary">사용자 등록</b-btn>
+      <b-btn v-on:click="join()" size="sm" text="사용자 등록" variant="success">사용자 등록</b-btn>
       <b-btn v-on:click="login()" size="sm" text="로그인" variant="primary">로그인</b-btn>
     </div>
 
