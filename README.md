@@ -97,7 +97,7 @@
 
 * **Request Example**
 ```
-curl -X POST 'http://:server_url/api/v1/member/finish' -d '{
+curl -X POST 'http://:server_url/api/v1/member/join' -d '{
     "name": "jyp",
     "password": "1234567890"
 }'
